@@ -122,7 +122,7 @@ while not endOfFile:
             endOfFile = True
             break
             print("End of file")
-print(json.dumps(languageCount))
+print("Local result is ", json.dumps(languageCount))
 languageCount = json.dumps(languageCount)
 gatheredLanguageCount = comm.gather(languageCount,0)
 if rank == 0:
@@ -130,5 +130,5 @@ if rank == 0:
     # print(str(gatheredLanguageCount))
     for i in range(comm.size):
         final_result = merge(json.loads(gatheredLanguageCount[i]),final_result)
-    print(json.dumps(final_result))
+    print("Final result is: ",json.dumps(final_result))
     print("--- %s seconds ---" % (time.time() - start_time))
