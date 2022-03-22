@@ -62,7 +62,7 @@ tweetFilePath = "smallTwitter.json"
 try:
     tweetStream = open("smallTwitter.json", "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
-except FileNotFoundError as e:
+except IOError as e:
     print("Tweet file not found")
     quit()
 
