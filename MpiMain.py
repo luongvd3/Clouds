@@ -60,9 +60,9 @@ if rank == 0:
     start_time = time.time()
 
 
-tweetFilePath = "smallTwitter.json"
+tweetFilePath = "bigTwitter.json"
 try:
-    tweetStream = io.open("smallTwitter.json", "r", encoding="utf-8")
+    tweetStream = io.open(tweetFilePath, "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
 except IOError as e:
     print("Tweet file not found")
@@ -105,7 +105,7 @@ while not endOfFile:
             # if rank == 0: print(json.dumps(tweet))
             #print(tweet['doc']['metadata']['iso_language_code'])
             if tweet['doc']['coordinates']:
-                print(rank, tweet['doc']['coordinates']['coordinates'])
+                # print(rank, tweet['doc']['coordinates']['coordinates'])
                 for boundary in processedGrids:
                     if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
                         languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1

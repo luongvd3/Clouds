@@ -2,7 +2,7 @@
 #SBATCH --error=err-%j.err
 #SBATCH --output=snowy-1-4-%j.out
 #SBATCH --partition=snowy
-#SBATCH --time=0:30:00
+#SBATCH --time=1:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --ntasks-per-node=4
