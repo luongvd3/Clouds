@@ -1,7 +1,6 @@
-import collections
+import collections, json, time
 from mpi4py import MPI
 import numpy as np
-import json
 from functools import partial
 
 gridPosition = ["topLeft", "left", "left", "bottomLeft","top","center","center","bottom","top","center","center","bottom","topRight","right","right","bottomRight"]
@@ -54,6 +53,10 @@ def merge(source, destination):
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 print(rank)
+start_time = 0
+if rank == 0:
+    start_time = time.time()
+
 
 tweetFilePath = "smallTwitter.json"
 try:
@@ -66,8 +69,9 @@ except FileNotFoundError as e:
 processedGrids = [];
 #get boundaries of each square
 for grid in gridsJson['features']:
-    leftRight = [grid['geometry']['coordinates'][0][1][0],grid['geometry']['coordinates'][0][2][0]]
-    topBottom = [grid['geometry']['coordinates'][0][0][1],grid['geometry']['coordinates'][0][1][1]]
+    boundary = np.array(grid['geometry']['coordinates'][0]).T
+    leftRight = [min(boundary[0]), max(boundary[0])]
+    topBottom = [max(boundary[1]), min(boundary[1])]
     processedGrids.append([leftRight, topBottom])
 
 # print(processedGrids)
@@ -102,7 +106,7 @@ while not endOfFile:
                 print(rank, tweet['doc']['coordinates']['coordinates'])
                 for boundary in processedGrids:
                     if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
-                        languageCount[processedGrids.index(boundary)+1][tweet['doc']['metadata']['iso_language_code']] += 1
+                        languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
         except StopIteration:
             endOfFile = True
             print("End of file")
@@ -125,3 +129,4 @@ if rank == 0:
     for i in range(comm.size):
         final_result = merge(json.loads(gatheredLanguageCount[i]),final_result)
     print(json.dumps(final_result))
+    print("--- %s seconds ---" % (time.time() - start_time))

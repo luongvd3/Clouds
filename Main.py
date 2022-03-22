@@ -1,4 +1,6 @@
 import collections
+import time
+
 from mpi4py import MPI
 import numpy as np
 import json
@@ -55,7 +57,7 @@ def merge(source, destination):
             destination[key] += value
 
     return destination
-
+start_time = time.time()
 tweetFilePath = "smallTwitter.json"
 try:
     tweetStream = open("smallTwitter.json", "r", encoding="utf-8")
@@ -69,8 +71,9 @@ print(gridsJson['features'][0]['geometry']['coordinates'][0])
 processedGrids = [];
 #get boundaries of each square
 for grid in gridsJson['features']:
-    leftRight = [grid['geometry']['coordinates'][0][1][0],grid['geometry']['coordinates'][0][2][0]]
-    topBottom = [grid['geometry']['coordinates'][0][0][1],grid['geometry']['coordinates'][0][1][1]]
+    boundary = np.array(grid['geometry']['coordinates'][0]).T
+    leftRight = [min(boundary[0]), max(boundary[0])]
+    topBottom = [max(boundary[1]), min(boundary[1])]
     processedGrids.append([leftRight, topBottom])
 
 print(processedGrids)
@@ -89,10 +92,10 @@ for i in range(5000):
             print(tweet['doc']['coordinates']['coordinates'])
             for boundary in processedGrids:
                 if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
-                    languageCount[processedGrids.index(boundary)+1][tweet['doc']['metadata']['iso_language_code']] += 1
+                    languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
     except StopIteration:
         print("End of file")
-
+print("--- %s seconds ---" % (time.time() - start_time))
 #Test
 for pair in processedGrids:
     assert pair[0][0] < pair[0][1]
