@@ -1,4 +1,6 @@
 import collections, json, time
+import io
+
 from mpi4py import MPI
 import numpy as np
 from functools import partial
@@ -60,7 +62,7 @@ if rank == 0:
 
 tweetFilePath = "smallTwitter.json"
 try:
-    tweetStream = open("smallTwitter.json", "r", encoding="utf-8")
+    tweetStream = io.open("smallTwitter.json", "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
 except IOError as e:
     print("Tweet file not found")

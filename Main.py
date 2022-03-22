@@ -1,4 +1,5 @@
 import collections
+import io
 import time
 
 from mpi4py import MPI
@@ -60,7 +61,7 @@ def merge(source, destination):
 start_time = time.time()
 tweetFilePath = "smallTwitter.json"
 try:
-    tweetStream = open("smallTwitter.json", "r", encoding="utf-8")
+    tweetStream = io.open("smallTwitter.json", "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
 except IOError as e:
     print("Tweet file not found")
