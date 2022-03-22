@@ -101,14 +101,15 @@ while not endOfFile:
             # print(rank,i)
             tweetStr = next(tweetStream)[:-2];
             tweetStr = tweetStr[:-1] if tweetStr[-1] == "]" else tweetStr
-            tweet = json.loads(tweetStr)
-            # if rank == 0: print(json.dumps(tweet))
-            #print(tweet['doc']['metadata']['iso_language_code'])
-            if tweet['doc']['coordinates']:
-                # print(rank, tweet['doc']['coordinates']['coordinates'])
-                for boundary in processedGrids:
-                    if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
-                        languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
+            try:
+                tweet = json.loads(tweetStr)
+                if tweet['doc']['coordinates']:
+                    # print(tweet['doc']['coordinates']['coordinates'])
+                    for boundary in processedGrids:
+                        if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
+                            languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
+            except json.decoder.JSONDecodeError:
+                print("Unable to decode: ", tweetStr)
         except StopIteration:
             endOfFile = True
             print("End of file")

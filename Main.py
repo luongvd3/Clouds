@@ -59,9 +59,9 @@ def merge(source, destination):
 
     return destination
 start_time = time.time()
-tweetFilePath = "smallTwitter.json"
+tweetFilePath = "bigTwitter.json"
 try:
-    tweetStream = io.open("smallTwitter.json", "r", encoding="utf-8")
+    tweetStream = open(tweetFilePath, "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
 except IOError as e:
     print("Tweet file not found")
@@ -81,21 +81,25 @@ print(processedGrids)
 #Skip first row
 next(tweetStream)
 languageCount = collections.defaultdict(partial(collections.defaultdict, int))
-for i in range(5000):
+for i in range(5000000):
     #print(next(tweetStream)[:-2])
     try:
         tweetStr = next(tweetStream)[:-2];
         tweetStr = tweetStr[:-1] if tweetStr[-1] == "]" else tweetStr
-        tweet = json.loads(tweetStr)
+        try:
+            tweet = json.loads(tweetStr)
+            if tweet['doc']['coordinates']:
+                # print(tweet['doc']['coordinates']['coordinates'])
+                for boundary in processedGrids:
+                    if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
+                        languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
+        except json.decoder.JSONDecodeError:
+            print(tweetStr)
         #print(tweet)
         #print(tweet['doc']['metadata']['iso_language_code'])
-        if tweet['doc']['coordinates']:
-            print(tweet['doc']['coordinates']['coordinates'])
-            for boundary in processedGrids:
-                if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
-                    languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
     except StopIteration:
         print("End of file")
+        break
 print("--- %s seconds ---" % (time.time() - start_time))
 #Test
 for pair in processedGrids:
