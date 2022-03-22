@@ -61,7 +61,7 @@ def merge(source, destination):
 start_time = time.time()
 tweetFilePath = "bigTwitter.json"
 try:
-    tweetStream = open(tweetFilePath, "r", encoding="utf-8")
+    tweetStream = io.open(tweetFilePath, "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
 except IOError as e:
     print("Tweet file not found")

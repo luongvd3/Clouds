@@ -108,7 +108,7 @@ while not endOfFile:
                     for boundary in processedGrids:
                         if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
                             languageCount[processedGrids.index(boundary)+1][tweet['doc']['lang']] += 1
-            except json.decoder.JSONDecodeError:
+            except ValueError:
                 print("Unable to decode: ", tweetStr)
         except StopIteration:
             endOfFile = True
