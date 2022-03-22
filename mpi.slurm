@@ -9,10 +9,10 @@
 #SBATCH --mem=32G
 #SBATCH --job-name=pure_mpi
 
-
+module load gcc/8.3.0
 module load openmpi/3.1.4
 module load mpi4py/3.0.2-timed-pingpong
-
+module load numpy/1.8.2-python-2.7.16
 
 echo "Scheduler 1 nodes 4 task 4 cpus (snowy)"
 mpiexec -n 4 python MpiMain.py
