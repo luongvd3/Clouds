@@ -9,6 +9,7 @@
 #SBATCH --mem=32G
 #SBATCH --job-name=pure_mpi
 
+module load foss/2019b
 module load python/3.8.2
 module load gcc/8.3.0
 module load openmpi/3.1.4
