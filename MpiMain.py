@@ -62,7 +62,7 @@ if rank == 0:
 
 tweetFilePath = "bigTwitter.json"
 try:
-    tweetStream = io.open(tweetFilePath, "r", encoding="utf-8")
+    tweetStream = open(tweetFilePath, "r", encoding="utf-8")
     gridsJson = json.load(open("sydGrid-2.json", "r"))
 except IOError as e:
     print("Tweet file not found")
