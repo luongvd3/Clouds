@@ -122,8 +122,6 @@ for region, data in languageCount.items():
 for pair in processedGrids:
     assert pair[0][0] < pair[0][1]
     assert pair[1][0] > pair[1][1]
-a = collections.defaultdict(partial(collections.defaultdict, int))
-a['1']['es'] = 10
-# languageCount['1']['es'] += 10
-print(merge(a,languageCount))
-print(final_result)
+for result in final_result.items():
+    print("Cell:",result[0],",",result[1])
+# print(final_result)

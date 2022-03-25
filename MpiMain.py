@@ -158,5 +158,7 @@ if rank == 0:
             top10 += " "+ list(data.keys())[i] + "-" + str(list(data.values())[i])
             i += 1
         final_result[region]["Top 10 Languages & #Tweets"] = top10
-    print("Final result is: ", json.dumps(final_result))
+    # print("Final result is: ", json.dumps(final_result))
+    for result in final_result.items():
+        print("Cell:",result[0],",",result[1])
     print("--- %s seconds ---" % (time.time() - start_time))
