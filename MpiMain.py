@@ -68,12 +68,16 @@ if rank == 0:
 tweetFilePath = "bigTwitter.json"
 try:
     tweetStream = open(tweetFilePath, "r", encoding="utf-8")
-    gridsJson = json.load(open("sydGrid-2.json", "r"))
-    languages = [line[:-1].split(" ") for line in open("languages.txt", "r", encoding="utf-8").readlines()]
+    languageFile = open("languages.txt", "r", encoding="utf-8")
+    gridsFile = open("sydGrid-2.json", "r")
+    gridsJson = json.load(gridsFile)
+    languages = [line[:-1].split(" ") for line in languageFile.readlines()]
 except IOError as e:
     print("File not found")
     quit()
-
+finally:
+    languageFile.close()
+    gridsFile.close()
 processedGrids = [];
 # get boundaries of each square
 for grid in gridsJson['features']:
@@ -101,8 +105,8 @@ while not endOfFile:
             next(tweetStream)
         except StopIteration:
             endOfFile = True
-            break
             print("End of file")
+            break
 
     for i in range(batch_size):
         # print(next(tweetStream)[:-2])
@@ -133,8 +137,10 @@ while not endOfFile:
             next(tweetStream)
         except StopIteration:
             endOfFile = True
-            break
             print("End of file")
+            break
+
+tweetStream.close()
 # print("Local result is ", json.dumps(languageCount))
 languageCount = json.dumps(languageCount)
 gatheredLanguageCount = comm.gather(languageCount, 0)
