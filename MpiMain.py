@@ -10,8 +10,6 @@ gridPosition = ["topLeft", "left", "left", "bottomLeft", "top", "center", "cente
 
 
 # decide if a coordinates is within a region following all the conditions set out in the assignment specs
-# note that the grids coordinates have more numbers behind the floating point or  are more details than the ones from the tweets so it's not
-# possible a tweet to fall on a border of a grid, so the extra conditions seem unnecessary
 def isWithin(point, boundary, position):
     if position == "center" or position == "right" or position == "top" or position == "topRight":
         if boundary[0][0] < point[0] < boundary[0][1] and boundary[1][1] < point[1] < boundary[1][0]:
@@ -101,23 +99,19 @@ while not endOfFile:
     # skip rows that are being processed by others
     for j in range(batch_size * rank):
         try:
-            # if rank == 1: print(rank,j)
             next(tweetStream)
         except StopIteration:
             endOfFile = True
             print("End of file")
             break
-
+    # process lines
     for i in range(batch_size):
-        # print(next(tweetStream)[:-2])
         try:
-            # print(rank,i)
             tweetStr = next(tweetStream)[:-2];
             tweetStr = tweetStr[:-1] if tweetStr[-1] == "]" else tweetStr
             try:
                 tweet = json.loads(tweetStr)
                 if tweet['doc']['coordinates'] and tweet['doc']['lang'] != "und" and tweet['doc']['lang'] != "null":
-                    # print(tweet['doc']['coordinates']['coordinates'])
                     for boundary in processedGrids:
                         if isWithin(tweet['doc']['coordinates']['coordinates'], boundary, gridPosition[processedGrids.index(boundary)]):
                             if tweet['doc']['lang'] in languagesDict.keys():
@@ -141,12 +135,12 @@ while not endOfFile:
             break
 
 tweetStream.close()
-# print("Local result is ", json.dumps(languageCount))
+
 languageCount = json.dumps(languageCount)
+# gather and merge result at root node
 gatheredLanguageCount = comm.gather(languageCount, 0)
 if rank == 0:
     gathered_result = collections.defaultdict(partial(collections.defaultdict, int))
-    # print(str(gatheredLanguageCount))
     for i in range(comm.size):
         gathered_result = merge(json.loads(gatheredLanguageCount[i]), gathered_result)
 
@@ -164,7 +158,6 @@ if rank == 0:
             top10 += " "+ list(data.keys())[i] + "-" + str(list(data.values())[i])
             i += 1
         final_result[region]["Top 10 Languages & #Tweets"] = top10
-    # print("Final result is: ", json.dumps(final_result))
     for result in final_result.items():
         print("Cell:",result[0],",",result[1])
     print("--- %s seconds ---" % (time.time() - start_time))
